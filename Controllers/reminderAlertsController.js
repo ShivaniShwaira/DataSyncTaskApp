@@ -1,12 +1,60 @@
 const reminderAlertsModel = require("../Models/reminderAlertModel");
+const reminderQueue = require('../Jobs/queues/reminderQueues');
+const userModel = require("../Models/userModel");
 
 module.exports.addReminderAlert = async function (req, res) {
     try {
         let data = req.body;
         data.createdBy = req.user._id.toString();
-        const [day, month, year] = req.body.date.split("-");
-        data.date = new Date(year,month-1,day);
-        const createAlert = await reminderAlertsModel.create(data)
+        // const [day, month, year] = req.body.date.split("-");
+        // data.date = new Date(year,month-1,day);
+         // Combine date and time to one proper Date
+    const [day, month, year] = req.body.date.split("-");
+    const fullDateTimeStr = `${year}-${month}-${day} ${req.body.time}`; // e.g., "2025-11-06 10:57 am"
+
+    const alertDate = new Date(fullDateTimeStr);
+    if (isNaN(alertDate)) {
+      return res.status(400).send({ status: false, message: "Invalid date or time format" });
+    }
+
+    data.date = alertDate; // store full timestamp
+
+    // Save reminder in DB
+    const createAlert = await reminderAlertsModel.create(data);
+
+    // Calculate reminder 10 mins before
+    const reminderTime = new Date(alertDate.getTime() - 10 * 60 * 1000);
+    const delay = Math.max(reminderTime - Date.now(), 0);
+
+    console.log(`⏰ Reminder scheduled in ${delay / 1000 / 60} minutes`);
+
+    // Add BullMQ job
+    await reminderQueue.add(
+      "sendReminder",
+      { alertId: createAlert._id, userId: req.user._id },
+      {
+        delay, // execute later
+        attempts: 3,
+        backoff: { type: "exponential", delay: 2000 },
+        removeOnComplete: true,
+        removeOnFail: false,
+      }
+    );
+        // const createAlert = await reminderAlertsModel.create(data)
+        // const delay = new Date(time).getTime() - Date.now() - (15 * 60 * 1000); // 15 mins before
+        // await notificationQueue.add("sendNotification",
+        //     { token, title, body: "Your meeting starts in 15 minutes" },
+        //     { delay, attempts: 3, backoff: { type: "exponential", delay: 2000 } }
+        // );
+
+        // Schedule a reminder job 10 min before the alert time
+        // const reminderTime = new Date(data.date.getTime() - 10 * 60 * 1000);
+        //  console.log(reminderTime - Date.now(),"reminderTime---->>>")
+        // await reminderQueue.add(
+        //     'sendReminder',
+        //     { alertId: createAlert._id, userId: req.user._id },
+        //     { delay: reminderTime - Date.now() } // auto runs later
+        // );
         return res.status(201).send({ status: true, message: "Alert created successfully", data: createAlert })
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -41,10 +89,23 @@ module.exports.editAlert = async function (req, res) {
 module.exports.getAlertList = async function (req, res) {
     try {
         let lastSync = req.query.lastSync;
+        let deviceId = req.query.deviceId;
+        let userId = req.user._id.toString();
         if (req.user.role !== 'primary') {
             return res.status(403).json({ message: 'Access denied' });
         }
         let alertList=[]
+        
+    // Step 1: Get user's device info
+    // const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
+    // if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
+
+    // const device = user.devices.find(d => d.deviceId === deviceId);
+    // // const lastSync = clientLastSync || device?.lastSync || new Date(0); // fallback to epoch if first sync
+    //  await userModel.updateOne(
+    //   { _id: userId, "devices.deviceId": deviceId },
+    //   { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
+    // );
         if(!lastSync){
            alertList = await reminderAlertsModel.find({ createdBy: req.user._id.toString(),isDeleted:false});
         }else{

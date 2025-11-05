@@ -1,10 +1,11 @@
 const Document = require('../Models/reportModel');
 const path = require('path');
 const fs = require('fs');
-
+const userModel = require("../Models/userModel");
 
 module.exports.uploadDocument = async (req, res) => {
   try {
+    console.log("2");
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
@@ -17,7 +18,7 @@ module.exports.uploadDocument = async (req, res) => {
       relatedTo: req.body.relatedTo || 'general',
       deviceId: req.body.deviceId || null,
     });
-
+    console.log("3");
     return res.status(201).json({ status: true,message: 'Document uploaded successfully', data: newDoc });
   } catch (error) {
     console.error(error);
@@ -29,13 +30,24 @@ module.exports.uploadDocument = async (req, res) => {
 module.exports.getDocuments = async (req, res) => {
   try {
     const {lastSync } = req.query;
-
+     let deviceId = req.query.deviceId;
+        let userId = req.user._id.toString();
     // const query = { uploadedBy: userId, isDeleted: false };
 
     // if (lastSync) {
     //   query.updatedAt = { $gt: new Date(lastSync) }; // only get new/updated docs
     // }
- let docList=[]
+        // Step 1: Get user's device info
+        // const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
+        // if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
+    
+        // const device = user.devices.find(d => d.deviceId === deviceId);
+        // // const lastSync = clientLastSync || device?.lastSync || new Date(0); // fallback to epoch if first sync
+        //  await userModel.updateOne(
+        //   { _id: userId, "devices.deviceId": deviceId },
+        //   { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
+        // );
+        let docList=[]
         if(!lastSync){
            docList = await Document.find({ uploadedBy: req.user._id.toString(),isDeleted:false});
         }else{

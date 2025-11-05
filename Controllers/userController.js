@@ -5,14 +5,22 @@ const jwt = require('jsonwebtoken');
 module.exports.registration = async function (req, res) {
     try {
         let data = req.body
-        const { email, password} = data
-        // let emailExist = await userModel.findOne({ email: email })
-        // if (emailExist != null) {
-        //     return res.status(400).send({ status: false, message: "Entered email is already exist" })
-        // }
+        const { email, password,deviceId, deviceType} = data
+        let emailExist = await userModel.findOne({ email: email })
+        if (emailExist != null) {
+            return res.status(400).send({ status: false, message: "Entered email is already exist" })
+        }
         if (password && password.length < 8 || password.length > 15) { return res.status(400).send({ status: false, massage: "Password should be 8 to 15 characters long" }) }
         const hash = bcrypt.hashSync(password, 6);
         data.password = hash
+        data.devices=[
+        {
+          deviceId,
+          deviceType: deviceType || "mobile",
+          lastSync: null,
+          lastActive: new Date()
+        }
+      ]
         const createUser = await userModel.create(data)
         return res.status(201).send({ status: true, message: "User created successfully", data: createUser })
     } catch (error) {
@@ -24,7 +32,7 @@ module.exports.login = async function (req, res) {
     try {
         const requestbody = req.body;
 
-        const { email, password } = requestbody;
+        const { email, password,deviceId,deviceType } = requestbody;
        console.log(email,"email---->>>")
         const user = await userModel.findOne({ email: email ,isDeleted:false})
         console.log(user,"founduser----->>>>")
@@ -37,7 +45,21 @@ module.exports.login = async function (req, res) {
                 UserId: user._id,
                 email: user.email
             }, "process.env.PRIVATE_KEY", { expiresIn: "10h" })
-            let update = await userModel.findOneAndUpdate({ email: email,isDeleted:false }, { token: token })
+             const existingDevice = user.devices.find(d => d.deviceId === deviceId);
+
+    if (existingDevice) {
+      // Device already registered — just update timestamps
+      existingDevice.lastActive = new Date();
+    } else {
+      // Add new device entry
+      user.devices.push({
+        deviceId,
+        deviceType: deviceType || 'mobile',
+        lastSync: null,
+        lastActive: new Date()
+      });
+    }
+            let update = await userModel.findOneAndUpdate({ email: email,isDeleted:false }, { token: token });
             return res.status(200).send({ status: true, message: 'User logged in successfully', data: { userId: user._id, token: token } })
         }
         else {
