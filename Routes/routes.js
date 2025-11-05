@@ -28,6 +28,7 @@ router.get("/getreports",auth.authentication,reportController.getDocuments);
 router.put("/deletereport",auth.authentication,reportController.deleteDocument);
 router.post("/uploadreport",auth.authentication,upload.single('file'),reportController.uploadDocument);
 router.get("/downloadreport",auth.authentication,reportController.downloadDocument);
+router.put("/editreport",auth.authentication,upload.single('file'),reportController.editDocument);
 // Routes
 // router.post('/upload', upload.single('file'), reportController.uploadDocument);
 // router.get('/', reportController.getDocuments);

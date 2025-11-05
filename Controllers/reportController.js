@@ -5,11 +5,15 @@ const userModel = require("../Models/userModel");
 
 module.exports.uploadDocument = async (req, res) => {
   try {
-    console.log("2");
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
+    let reportNameExist= await Document.findOne({name:req.body.name,isDeleted:false})
+    if(reportNameExist!=null){
+        return res.status(400).send({ status: false, message: "Entered Report Name is already exist" });
+    }
     const newDoc = await Document.create({
+      name:req.body.name,
       fileName: req.file.originalname,
       filePath: req.file.path,
       fileType: req.file.mimetype,
@@ -18,7 +22,6 @@ module.exports.uploadDocument = async (req, res) => {
       relatedTo: req.body.relatedTo || 'general',
       deviceId: req.body.deviceId || null,
     });
-    console.log("3");
     return res.status(201).json({ status: true,message: 'Document uploaded successfully', data: newDoc });
   } catch (error) {
     console.error(error);
@@ -31,7 +34,7 @@ module.exports.getDocuments = async (req, res) => {
   try {
     const {lastSync } = req.query;
      let deviceId = req.query.deviceId;
-        let userId = req.user._id.toString();
+     let userId = req.user._id.toString();
     // const query = { uploadedBy: userId, isDeleted: false };
 
     // if (lastSync) {
@@ -91,3 +94,69 @@ module.exports.deleteDocument = async (req, res) => {
     res.status(500).json({ message: 'Error deleting document', error });
   }
 };
+
+module.exports.editDocument = async function (req, res) {
+    try {
+        // let data = req.body;
+        // data.uploadedBy = req.user._id.toString();
+       
+        let reportId = req.body.reportId.trim();
+    //     const doc = await Document.findOne({_id:reportId,isDeleted:false});
+    //     if (!doc) return res.status(404).json({ message: 'Not found' });
+    //      let reportNameExist= await Document.findOne({name:req.body.name,isDeleted:false})
+    // if(reportNameExist!=null){
+    //     return res.status(400).send({ status: false, message: "Entered Report Name is already exist" });
+    // }
+
+     // Fetch the document first
+    const doc = await Document.findOne({ _id: reportId, isDeleted: false });
+    if (!doc) {
+      return res.status(404).json({ status: false, message: 'Document not found' });
+    }
+
+    // Check if name is changing and already exists
+    if (req.body.name && req.body.name.trim() !== doc.name) {
+      const duplicate = await Document.exists({
+        name: req.body.name.trim(),
+        _id: { $ne: reportId },
+        isDeleted: false
+      });
+      if (duplicate) {
+        return res.status(400).json({
+          status: false,
+          message: 'A document with this name already exists.'
+        });
+      }
+    }
+
+   
+        if(req.body.version != doc.version) {
+        return res.status(409).json({
+           message: 'Conflict detected',
+           serverVersion: doc.version,
+           currentData: doc
+        });
+        }
+        // data.version=doc.version+1;
+        let data = {
+            name: req?.body?.name,
+            fileName: req?.file?.originalname,
+            filePath: req?.file?.path,
+            fileType: req?.file?.mimetype,
+            size: req?.file?.size,
+            uploadedBy: req.user._id.toString(), // normally from auth token
+            relatedTo: req?.body?.relatedTo || 'general',
+            deviceId: req?.body?.deviceId || null,
+            version: doc.version + 1
+        }
+         // Apply updates
+    Object.assign(doc, data);
+    // if (req.body.name) doc.name = req.body.name.trim();
+    // doc.version += 1;
+    await doc.save();
+        // let updated = await Document.findOneAndUpdate({ _id: reportId,isDeleted:false }, { $set: data }, { new: true })
+        return res.status(200).send({ status: true, message: "Data updated succefully", data: doc })
+       } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+       }
+}
