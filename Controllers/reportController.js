@@ -40,7 +40,7 @@ module.exports.getDocuments = async (req, res) => {
     // if (lastSync) {
     //   query.updatedAt = { $gt: new Date(lastSync) }; // only get new/updated docs
     // }
-        // Step 1: Get user's device info
+        // user's device info
         // const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
         // if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
     
@@ -50,12 +50,17 @@ module.exports.getDocuments = async (req, res) => {
         //   { _id: userId, "devices.deviceId": deviceId },
         //   { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
         // );
+        const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
+            if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
         let docList=[]
         if(!lastSync){
            docList = await Document.find({ uploadedBy: req.user._id.toString(),isDeleted:false});
         }else{
            docList = await Document.find({ uploadedBy: req.user._id.toString(),updatedAt: { $gt: lastSync },isDeleted:false});
-
+            await userModel.updateOne(
+                { _id: userId, "devices.deviceId": deviceId },
+                { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
+            );
         }
     // const docs = await Document.find(query).sort({ updatedAt: -1 });
     return res.status(200).send({ status: true, message: "Report List is here", data: docList })
@@ -108,13 +113,11 @@ module.exports.editDocument = async function (req, res) {
     //     return res.status(400).send({ status: false, message: "Entered Report Name is already exist" });
     // }
 
-     // Fetch the document first
     const doc = await Document.findOne({ _id: reportId, isDeleted: false });
     if (!doc) {
       return res.status(404).json({ status: false, message: 'Document not found' });
     }
 
-    // Check if name is changing and already exists
     if (req.body.name && req.body.name.trim() !== doc.name) {
       const duplicate = await Document.exists({
         name: req.body.name.trim(),
@@ -144,7 +147,7 @@ module.exports.editDocument = async function (req, res) {
             filePath: req?.file?.path,
             fileType: req?.file?.mimetype,
             size: req?.file?.size,
-            uploadedBy: req.user._id.toString(), // normally from auth token
+            uploadedBy: req.user._id.toString(), 
             relatedTo: req?.body?.relatedTo || 'general',
             deviceId: req?.body?.deviceId || null,
             version: doc.version + 1

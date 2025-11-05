@@ -33,9 +33,7 @@ module.exports.login = async function (req, res) {
         const requestbody = req.body;
 
         const { email, password,deviceId,deviceType } = requestbody;
-       console.log(email,"email---->>>")
         const user = await userModel.findOne({ email: email ,isDeleted:false})
-        console.log(user,"founduser----->>>>")
         if (!user) {
             return res.status(401).send({ status: false, message: 'Entered EmailId is wrong' })
         }
@@ -58,6 +56,7 @@ module.exports.login = async function (req, res) {
         lastSync: null,
         lastActive: new Date()
       });
+      user.save()
     }
             let update = await userModel.findOneAndUpdate({ email: email,isDeleted:false }, { token: token });
             return res.status(200).send({ status: true, message: 'User logged in successfully', data: { userId: user._id, token: token } })
@@ -73,7 +72,6 @@ module.exports.login = async function (req, res) {
 module.exports.editProfile = async function (req, res) {
     try {
         let profile = req.body
-        console.log(req.user,"req user--->>>")
         let userId = req.user._id.toString();
         let updated = await userModel.findOneAndUpdate({ _id: userId,isDeleted:false}, { $set: profile }, { new: true })
         return res.status(200).send({ status: true, message: "Data updated succefully", data: updated })
@@ -84,7 +82,6 @@ module.exports.editProfile = async function (req, res) {
 
 module.exports.getMinorMembersList = async function (req, res) {
     try {
-        console.log( req.user,"req user--->>>")
         // let minorsList = req.user.minorMembers
         // const allData = await userModel.find({
         //     _id: { $in: [minorsList] }

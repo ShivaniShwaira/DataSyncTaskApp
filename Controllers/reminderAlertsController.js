@@ -49,7 +49,6 @@ module.exports.addReminderAlert = async function (req, res) {
 
         // Schedule a reminder job 10 min before the alert time
         // const reminderTime = new Date(data.date.getTime() - 10 * 60 * 1000);
-        //  console.log(reminderTime - Date.now(),"reminderTime---->>>")
         // await reminderQueue.add(
         //     'sendReminder',
         //     { alertId: createAlert._id, userId: req.user._id },
@@ -96,21 +95,21 @@ module.exports.getAlertList = async function (req, res) {
         }
         let alertList=[]
         
-    // Step 1: Get user's device info
-    // const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
-    // if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
+    // Get user's device info
+    const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
+    if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
+   
+    // const device = user.devices.find(d => d.deviceId == deviceId);
+    // const lastSync = clientLastSync || device?.lastSync || new Date(0); // fallback to epoch if first sync
 
-    // const device = user.devices.find(d => d.deviceId === deviceId);
-    // // const lastSync = clientLastSync || device?.lastSync || new Date(0); // fallback to epoch if first sync
-    //  await userModel.updateOne(
-    //   { _id: userId, "devices.deviceId": deviceId },
-    //   { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
-    // );
         if(!lastSync){
            alertList = await reminderAlertsModel.find({ createdBy: req.user._id.toString(),isDeleted:false});
         }else{
            alertList = await reminderAlertsModel.find({ createdBy: req.user._id.toString(),updatedAt: { $gt: lastSync },isDeleted:false});
-
+            await userModel.updateOne(
+                { _id: userId, "devices.deviceId": deviceId },
+                { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
+            );
         }
         return res.status(200).send({ status: true, message: "Alert List is here", data: alertList })
        } catch (error) {
