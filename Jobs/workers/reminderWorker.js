@@ -4,7 +4,7 @@ const connection = require('../../Config/redis');
 const reminderAlertsModel = require('../../Models/reminderAlertModel');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/dataSyncTask', {
+mongoose.connect('mongodb://mongo-db:27017/dataSyncTask', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })

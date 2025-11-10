@@ -1,64 +1,117 @@
 const reminderAlertsModel = require("../Models/reminderAlertModel");
 const reminderQueue = require('../Jobs/queues/reminderQueues');
 const userModel = require("../Models/userModel");
+const moment = require("moment-timezone");
+
+// module.exports.addReminderAlert = async function (req, res) {
+//     try {
+//         let data = req.body;
+//         data.createdBy = req.user._id.toString();
+//         // const [day, month, year] = req.body.date.split("-");
+//         // data.date = new Date(year,month-1,day);
+//          // Combine date and time to one proper Date
+//     const [day, month, year] = req.body.date.split("-");
+//     const fullDateTimeStr = `${year}-${month}-${day} ${req.body.time}`; // e.g., "2025-11-06 10:57 am"
+
+//     const alertDate = new Date(fullDateTimeStr);
+//     if (isNaN(alertDate)) {
+//       return res.status(400).send({ status: false, message: "Invalid date or time format" });
+//     }
+
+//     data.date = alertDate; // store full timestamp
+
+//     // Save reminder in DB
+//     const createAlert = await reminderAlertsModel.create(data);
+
+//     // Calculate reminder 10 mins before
+//     const reminderTime = new Date(alertDate.getTime() - 10 * 60 * 1000);
+//     const delay = Math.max(reminderTime - Date.now(), 0);
+
+//     console.log(`⏰ Reminder scheduled in ${delay / 1000 / 60} minutes`);
+
+//     // Add BullMQ job
+//     await reminderQueue.add(
+//       "sendReminder",
+//       { alertId: createAlert._id, userId: req.user._id },
+//       {
+//         delay, // execute later
+//         attempts: 3,
+//         backoff: { type: "exponential", delay: 2000 },
+//         removeOnComplete: true,
+//         removeOnFail: false,
+//       }
+//     );
+//         // const createAlert = await reminderAlertsModel.create(data)
+//         // const delay = new Date(time).getTime() - Date.now() - (15 * 60 * 1000); // 15 mins before
+//         // await notificationQueue.add("sendNotification",
+//         //     { token, title, body: "Your meeting starts in 15 minutes" },
+//         //     { delay, attempts: 3, backoff: { type: "exponential", delay: 2000 } }
+//         // );
+
+//         // Schedule a reminder job 10 min before the alert time
+//         // const reminderTime = new Date(data.date.getTime() - 10 * 60 * 1000);
+//         // await reminderQueue.add(
+//         //     'sendReminder',
+//         //     { alertId: createAlert._id, userId: req.user._id },
+//         //     { delay: reminderTime - Date.now() } // auto runs later
+//         // );
+//         return res.status(201).send({ status: true, message: "Alert created successfully", data: createAlert })
+//     } catch (error) {
+//         return res.status(500).send({ status: false, message: error.message })
+//     }
+// }
 
 module.exports.addReminderAlert = async function (req, res) {
-    try {
-        let data = req.body;
-        data.createdBy = req.user._id.toString();
-        // const [day, month, year] = req.body.date.split("-");
-        // data.date = new Date(year,month-1,day);
-         // Combine date and time to one proper Date
-    const [day, month, year] = req.body.date.split("-");
-    const fullDateTimeStr = `${year}-${month}-${day} ${req.body.time}`; // e.g., "2025-11-06 10:57 am"
+  try {
+    let data = req.body;
+    data.createdBy = req.user._id.toString();
 
-    const alertDate = new Date(fullDateTimeStr);
-    if (isNaN(alertDate)) {
+    // Parse date & time correctly with timezone (Asia/Kolkata)
+    const [day, month, year] = req.body.date.split("-");
+    const fullDateTimeStr = `${year}-${month}-${day} ${req.body.time}`; // e.g. "2025-11-07 05:14 pm"
+
+    // Convert to JS Date object based on Asia/Kolkata timezone
+    const alertMoment = moment.tz(fullDateTimeStr, "YYYY-MM-DD hh:mm a", "Asia/Kolkata");
+    if (!alertMoment.isValid()) {
       return res.status(400).send({ status: false, message: "Invalid date or time format" });
     }
 
-    data.date = alertDate; // store full timestamp
+    // Store in UTC to keep DB consistent
+    const alertDate = alertMoment.toDate();
+    data.date = alertDate;
 
-    // Save reminder in DB
+    //  Save reminder
     const createAlert = await reminderAlertsModel.create(data);
 
-    // Calculate reminder 10 mins before
+    // Schedule reminder 10 minutes before
     const reminderTime = new Date(alertDate.getTime() - 10 * 60 * 1000);
     const delay = Math.max(reminderTime - Date.now(), 0);
 
-    console.log(`⏰ Reminder scheduled in ${delay / 1000 / 60} minutes`);
+    console.log(`⏰ Reminder scheduled in ${(delay / 1000 / 60).toFixed(2)} minutes`);
 
-    // Add BullMQ job
+    // Add job to BullMQ
     await reminderQueue.add(
       "sendReminder",
       { alertId: createAlert._id, userId: req.user._id },
       {
-        delay, // execute later
+        delay,
         attempts: 3,
         backoff: { type: "exponential", delay: 2000 },
         removeOnComplete: true,
         removeOnFail: false,
       }
     );
-        // const createAlert = await reminderAlertsModel.create(data)
-        // const delay = new Date(time).getTime() - Date.now() - (15 * 60 * 1000); // 15 mins before
-        // await notificationQueue.add("sendNotification",
-        //     { token, title, body: "Your meeting starts in 15 minutes" },
-        //     { delay, attempts: 3, backoff: { type: "exponential", delay: 2000 } }
-        // );
 
-        // Schedule a reminder job 10 min before the alert time
-        // const reminderTime = new Date(data.date.getTime() - 10 * 60 * 1000);
-        // await reminderQueue.add(
-        //     'sendReminder',
-        //     { alertId: createAlert._id, userId: req.user._id },
-        //     { delay: reminderTime - Date.now() } // auto runs later
-        // );
-        return res.status(201).send({ status: true, message: "Alert created successfully", data: createAlert })
-    } catch (error) {
-        return res.status(500).send({ status: false, message: error.message })
-    }
-}
+    return res.status(201).send({
+      status: true,
+      message: "Alert created successfully",
+      data: createAlert,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ status: false, message: error.message });
+  }
+};
 
 module.exports.editAlert = async function (req, res) {
     try {

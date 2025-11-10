@@ -1,0 +1,44 @@
+services:
+  backend-app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo-db
+      - redis
+    environment:
+      - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - .:/app
+    command: ["npm", "run", "start"]  # or node app.js
+
+  worker-app:
+    build: .
+    depends_on:
+      - mongo-db
+      - redis
+    environment:
+      - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - .:/app
+    command: ["node", "./Jobs/workers/reminderWorker.js"]
+
+  mongo-db:
+    image: mongo:6
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mongo-data:
+  redis-data:
