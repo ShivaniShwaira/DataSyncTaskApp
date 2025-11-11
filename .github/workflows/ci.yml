@@ -1,0 +1,32 @@
+name: CI Pipeline - Node.js + MongoDB + Redis + BullMQ
+on: 
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Start services using docker-compose
+      run: |
+        docker-compose -f docker-compose.yml up -d --build
+        echo "Containers are up and running..."
+    - name: Wait for MongoDB and Redis
+      run: |
+        echo "Witing for mongodb and redis to start..."
+        sleep 15
+    - name: Run tests
+      run: |
+        docker compose exec -T backend-app npm test
+      
+    - name: Stop and clean up
+      if: always()
+      run: docker compose down
