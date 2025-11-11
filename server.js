@@ -13,13 +13,14 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/uploads', express.static('uploads'));
 
+if (process.env.NODE_ENV !== "test") {
 mongoose.connect(url).then((res)=>{
     console.log("Db connected successfully")
 })
 .catch((err)=>{
     console.log("there is error")
 })
-
+}
 app.use('/',router)
 app.get('/test-job', async (req, res) => {
     console.log("adding job-->>")
@@ -35,3 +36,4 @@ app.listen(port, '0.0.0.0', () => {
   console.log("server is running on port 3000");
 });
 
+module.exports=app;
