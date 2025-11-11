@@ -30,9 +30,14 @@ jobs:
       run: |
         echo "Waiting for mongodb and redis to start..."
         sleep 35
-    - name: Run tests
-      run: docker compose run --rm backend-app npm test
-      
+    # - name: Run tests
+    #   run: docker compose run --rm backend-app npm test
+
+    - name: Run Tests
+      run: |
+          docker compose run --rm backend-app \
+          npm test -- --runInBand --detectOpenHandles 
+          
     - name: Stop and clean up
       if: always()
       run: docker compose down
