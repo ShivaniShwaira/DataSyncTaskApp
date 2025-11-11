@@ -17,7 +17,7 @@ jobs:
     
     - name: Start services using docker-compose
       run: |
-        docker-compose -f docker-compose.yml up -d --build
+        docker compose -f docker-compose.yml up -d --build
         echo "Containers are up and running..."
     - name: Wait for MongoDB and Redis
       run: |
