@@ -8,12 +8,13 @@ const userModel=require("../Models/userModel");
 describe("User API",()=>{
     let mongoServer;
     beforeAll(async()=>{
-        mongoServer= await MongoMemoryServer.create();
-        const uri=mongoServer.getUri();
-        await mongoose.connect(uri,{
-            useNewUrlParser:true,
-            useUnifiedTopology:true
-        })
+        // mongoServer= await MongoMemoryServer.create();
+        // const uri=mongoServer.getUri();
+        // await mongoose.connect(uri,{
+        //     useNewUrlParser:true,
+        //     useUnifiedTopology:true
+        // })
+        await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask")
     },20000);
 
     afterAll(async()=>{
