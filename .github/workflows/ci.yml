@@ -28,11 +28,10 @@ jobs:
 
     - name: Wait for MongoDB and Redis
       run: |
-        echo "Witing for mongodb and redis to start..."
-        sleep 15
+        echo "Waiting for mongodb and redis to start..."
+        sleep 35
     - name: Run tests
-      run: |
-        docker compose exec -T backend-app npm test
+      run: docker compose run --rm backend-app npm test
       
     - name: Stop and clean up
       if: always()
