@@ -33,11 +33,17 @@ jobs:
     # - name: Run tests
     #   run: docker compose run --rm backend-app npm test
 
+    # - name: Run Tests
+    #   run: |
+    #       docker compose run --rm backend-app \
+    #       npm test -- --runInBand --detectOpenHandles 
+
     - name: Run Tests
       run: |
           docker compose run --rm backend-app \
-          npm test -- --runInBand --detectOpenHandles 
-          
+          npm test -- --runInBand --forceExit
+
+
     - name: Stop and clean up
       if: always()
       run: docker compose down
