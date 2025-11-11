@@ -2,7 +2,7 @@ const request=require('supertest');
 const mongoose=require('mongoose');
 const {MongoMemoryServer}=require('mongodb-memory-server');
 
-const app=require("../server");
+const {app,server}=require("../server");
 const userModel=require("../Models/userModel");
 
 describe("User API",()=>{
@@ -19,6 +19,9 @@ describe("User API",()=>{
 
     afterAll(async()=>{
         await mongoose.disconnect();
+        if(server){
+            server.close();
+        }
         // await mongoServer.stop();
     })
 
