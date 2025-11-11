@@ -19,6 +19,13 @@ jobs:
       run: |
         docker compose -f docker-compose.yml up -d --build
         echo "Containers are up and running..."
+
+    - name: Check running containers
+      run: docker compose ps
+
+    - name: Show backend logs
+      run: docker compose logs backend-app
+
     - name: Wait for MongoDB and Redis
       run: |
         echo "Witing for mongodb and redis to start..."
