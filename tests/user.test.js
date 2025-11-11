@@ -21,8 +21,9 @@ describe("User API",()=>{
 
     afterAll(async()=>{
         await mongoose.disconnect();
-        server.close();
-        
+if (server) {
+    server.close();  // <-- only close if server exists
+  }        
         // await mongoServer.stop();
     })
 
