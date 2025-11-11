@@ -14,14 +14,15 @@ describe("User API",()=>{
         //     useNewUrlParser:true,
         //     useUnifiedTopology:true
         // })
-        await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask")
-    },20000);
+        await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask",{    
+            serverSelectionTimeoutMS: 50000, // prevent early timeout
+       })
+    },60000);
 
     afterAll(async()=>{
         await mongoose.disconnect();
-        if(server){
-            server.close();
-        }
+        server.close();
+        
         // await mongoServer.stop();
     })
 
