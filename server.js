@@ -32,8 +32,16 @@ app.get('/test-job', async (req, res) => {
 //     console.log("server is running on port 3000")
 // })
 
-const server=app.listen(port, '0.0.0.0', () => {
-  console.log("server is running on port 3000");
-});
+// const server=app.listen(port, '0.0.0.0', () => {
+//   console.log("server is running on port 3000");
+// });
+
+let server;
+if (process.env.NODE_ENV !== "test") {
+  server = app.listen(port, '0.0.0.0', () => {
+    console.log("server is running on port 3000");
+  });
+}
+
 
 module.exports={app,server};
