@@ -1,10 +1,11 @@
+require('dotenv').config();
 // src/jobs/workers/reminderWorker.js
 const { Worker } = require('bullmq');
 const connection = require('../../Config/redis');
 const reminderAlertsModel = require('../../Models/reminderAlertModel');
 const mongoose = require('mongoose');
-
-mongoose.connect('mongodb://mongo-db:27017/dataSyncTask', {
+//'mongodb://mongo-db:27017/dataSyncTask'
+mongoose.connect(process.env.MONGO_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })

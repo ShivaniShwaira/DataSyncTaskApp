@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express=require('express');
 const mongoose= require('mongoose');
 const bodyParser= require('body-parser');
@@ -5,7 +6,7 @@ const router= require('./Routes/routes');
 const cors = require('cors');
 const app= express();
 const port=3000;
-const url=  "mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0";  //      "mongodb://mongo-db:27017/dataSyncTask"; //"mongodb://localhost:27017/dataSyncTask";
+const url= process.env.MONGO_STRING;  //      "mongodb://mongo-db:27017/dataSyncTask"; //"mongodb://localhost:27017/dataSyncTask";
 const reminderQueue = require('./Jobs/queues/reminderQueues');
 
 app.use(cors());
