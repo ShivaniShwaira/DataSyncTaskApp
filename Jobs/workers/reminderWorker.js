@@ -5,7 +5,7 @@ const connection = require('../../Config/redis');
 const reminderAlertsModel = require('../../Models/reminderAlertModel');
 const mongoose = require('mongoose');
 //'mongodb://mongo-db:27017/dataSyncTask'
-mongoose.connect(process.env.MONGO_STRING, {
+mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })

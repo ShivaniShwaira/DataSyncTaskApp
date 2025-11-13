@@ -6,11 +6,13 @@ services:
     depends_on:
       - mongo-db
       - redis
-    environment:
-      # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
-      - MONGO_URL=mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+    env_file:
+      - .env
+    # environment:
+    #   # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
+    #   - MONGO_URL=mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0
+    #   - REDIS_HOST=redis
+    #   - REDIS_PORT=6379
     # volumes:
     #   - .:/app
     volumes:
@@ -24,11 +26,14 @@ services:
     depends_on:
       - mongo-db
       - redis
-    environment:
-      # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
-      - MONGO_URL=mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+    env_file:
+      - .env
+    # environment:
+    #   # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
+    #   - MONGO_URL=mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0
+    #   - REDIS_HOST=redis
+    #   - REDIS_PORT=6379
+
     # volumes:
     #   - .:/app
 

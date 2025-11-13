@@ -6,7 +6,7 @@ const router= require('./Routes/routes');
 const cors = require('cors');
 const app= express();
 const port=3000;
-const url= process.env.MONGO_STRING;  //      "mongodb://mongo-db:27017/dataSyncTask"; //"mongodb://localhost:27017/dataSyncTask";
+const url= process.env.MONGO_URL;  //      "mongodb://mongo-db:27017/dataSyncTask"; //"mongodb://localhost:27017/dataSyncTask";
 const reminderQueue = require('./Jobs/queues/reminderQueues');
 
 app.use(cors());

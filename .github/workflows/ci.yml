@@ -8,6 +8,12 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      MONGO_URL: ${{ secrets.MONGO_URL }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      # NODE_ENV: ${{ secrets.NODE_ENV }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
