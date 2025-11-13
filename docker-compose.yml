@@ -6,8 +6,14 @@ services:
     depends_on:
       - mongo-db
       - redis
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - PRIVATE_KEY=${PRIVATE_KEY}
+
     # environment:
     #   # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
     #   - MONGO_URL=mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0
@@ -26,8 +32,12 @@ services:
     depends_on:
       - mongo-db
       - redis
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     # environment:
     #   # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
     #   - MONGO_URL=mongodb+srv://shivanishwaira_db_user:PlC7rwCAyEJr2E8Q@cluster0.thp84z1.mongodb.net/dataSyncTask?appName=Cluster0
