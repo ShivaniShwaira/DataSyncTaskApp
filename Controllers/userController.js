@@ -101,7 +101,7 @@ module.exports.getMinorMembersList = async function (req, res) {
 
 module.exports.deleteUser = async (req, res) => {
   try {
-    const doc = await userModel.findOne({_id:req.body.id.toString(),isDeleted:false});
+    const doc = await userModel.findOne({_id:req.user.id.toString(),isDeleted:false});
     if (!doc) return res.status(404).json({ message: 'User not found' });
 
     doc.isDeleted = true;

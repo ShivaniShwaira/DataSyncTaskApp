@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-   "test": "jest --runInBand",
-   "start": "node server.js"
+    "test": "jest --runInBand",
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "jest": "^30.2.0",
-    "mongodb-memory-server": "^10.3.0",
+    "mongodb-memory-server": "^10.1.4",
     "supertest": "^7.1.4"
   }
 }

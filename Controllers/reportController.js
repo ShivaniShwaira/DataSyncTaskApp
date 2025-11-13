@@ -94,7 +94,7 @@ module.exports.deleteDocument = async (req, res) => {
     doc.version += 1;
     await doc.save();
 
-    return res.status(200).json({ status: true,message: 'Document deleted successfully', document: doc });
+    return res.status(200).json({ status: true,message: 'Document deleted successfully', data: doc });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting document', error });
   }
@@ -104,7 +104,7 @@ module.exports.editDocument = async function (req, res) {
     try {
         // let data = req.body;
         // data.uploadedBy = req.user._id.toString();
-       
+       console.log(req.user._id.toString(),"userid-->>")
         let reportId = req.body.reportId.trim();
     //     const doc = await Document.findOne({_id:reportId,isDeleted:false});
     //     if (!doc) return res.status(404).json({ message: 'Not found' });
@@ -115,6 +115,7 @@ module.exports.editDocument = async function (req, res) {
 
     const doc = await Document.findOne({ _id: reportId, isDeleted: false });
     if (!doc) {
+      console.log("doc not found",reportId);
       return res.status(404).json({ status: false, message: 'Document not found' });
     }
 
@@ -125,6 +126,7 @@ module.exports.editDocument = async function (req, res) {
         isDeleted: false
       });
       if (duplicate) {
+        console.log(duplicate,"dup--->>>")
         return res.status(400).json({
           status: false,
           message: 'A document with this name already exists.'
@@ -134,6 +136,7 @@ module.exports.editDocument = async function (req, res) {
 
    
         if(req.body.version != doc.version) {
+          console.log(req.body.version,doc.version,"doc version--->>>")
         return res.status(409).json({
            message: 'Conflict detected',
            serverVersion: doc.version,
