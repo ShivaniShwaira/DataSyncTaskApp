@@ -35,7 +35,7 @@ if (server) {
         const res= await request(app)
         .post("/registration")
         .send({
-            email: "test@exa.com",
+            email: "test1@exa.com",
         password: "password123",
         deviceId: "device123",
         deviceType: "mobile",
@@ -45,7 +45,7 @@ if (server) {
         })
         expect(res.statusCode).toBe(201);
         expect(res.body.status).toBe(true);
-        expect(res.body.data.email).toBe("test@exa.com");
+        expect(res.body.data.email).toBe("test1@exa.com");
         expect(res.body.message).toMatch("User created successfully");
     })
 
