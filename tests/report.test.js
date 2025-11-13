@@ -19,29 +19,29 @@ describe("USER API",()=>{
         //     useUnifiedTopology:true
         // })
 
-    //     await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask",{    
-    //         serverSelectionTimeoutMS: 50000, // prevent early timeout
-    //    });
+        await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask",{    
+            serverSelectionTimeoutMS: 50000, // prevent early timeout
+       });
 
-       try {
-    // Try starting in-memory MongoDB
-    mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("✅ Connected to in-memory MongoDB for testing");
-  } catch (err) {
-    console.warn("⚠️ MongoMemoryServer failed, falling back to local MongoDB:", err.message);
-    // Fallback to local or Atlas or docker container connection
-    const fallbackUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/testdb";
-    await mongoose.connect(fallbackUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("✅ Connected to fallback local MongoDB instance");
-  }
+//        try {
+//     // Try starting in-memory MongoDB
+//     mongoServer = await MongoMemoryServer.create();
+//     const uri = mongoServer.getUri();
+//     await mongoose.connect(uri, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//     });
+//     console.log("✅ Connected to in-memory MongoDB for testing");
+//   } catch (err) {
+//     console.warn("⚠️ MongoMemoryServer failed, falling back to local MongoDB:", err.message);
+//     // Fallback to local or Atlas or docker container connection
+//     const fallbackUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/testdb";
+//     await mongoose.connect(fallbackUri, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//     });
+//     console.log("✅ Connected to fallback local MongoDB instance");
+//   }
  await request(app)
       .post("/registration")
       .send({

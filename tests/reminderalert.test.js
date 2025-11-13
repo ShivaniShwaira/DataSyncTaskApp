@@ -10,15 +10,15 @@ describe("USER API",()=>{
     let mongoServer;
     let token;
     beforeAll(async()=>{
-        mongoServer= await MongoMemoryServer.create();
-        const uri=mongoServer.getUri();
-        await mongoose.connect(uri,{
-            useNewUrlParser:true,
-            useUnifiedTopology:true
-        })
-    //     await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask",{    
-    //         serverSelectionTimeoutMS: 50000, // prevent early timeout
-    //    });
+        // mongoServer= await MongoMemoryServer.create();
+        // const uri=mongoServer.getUri();
+        // await mongoose.connect(uri,{
+        //     useNewUrlParser:true,
+        //     useUnifiedTopology:true
+        // })
+        await mongoose.connect("mongodb://mongo-db:27017/dataSyncTask",{    
+            serverSelectionTimeoutMS: 50000, // prevent early timeout
+       });
 //      if (!process.env.TEST_TOKEN) {
 //     const loginRes = await request(app).post("/login").send({
 //       email:"test@exa.com",
