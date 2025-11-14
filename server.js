@@ -24,7 +24,6 @@ mongoose.connect(url).then((res)=>{
 }
 app.use('/',router)
 app.get('/test-job', async (req, res) => {
-    console.log("adding job-->>")
   await reminderQueue.add('test-job', { alertId: '671be1275aa3f5cf24b4e31c', userId: 'u1' });
   console.log("done job:)")
  return res.send('Job added to queue');
