@@ -13,6 +13,7 @@ jobs:
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
       # NODE_ENV: ${{ secrets.NODE_ENV }}
     steps:
     - name: Checkout repository

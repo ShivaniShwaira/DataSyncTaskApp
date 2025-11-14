@@ -13,6 +13,7 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - PRIVATE_KEY=${PRIVATE_KEY}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
 
     # environment:
     #   # - MONGO_URL=mongodb://mongo-db:27017/dataSyncTask
