@@ -104,7 +104,6 @@ module.exports.editDocument = async function (req, res) {
     try {
         // let data = req.body;
         // data.uploadedBy = req.user._id.toString();
-       console.log(req.user._id.toString(),"userid-->>")
         let reportId = req.body.reportId.trim();
     //     const doc = await Document.findOne({_id:reportId,isDeleted:false});
     //     if (!doc) return res.status(404).json({ message: 'Not found' });
