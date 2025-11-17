@@ -18,6 +18,7 @@ router.post("/registration",userController.registration);
 router.post("/login",userController.login);
 router.post("/edituser",auth.authentication,userController.editProfile);
 router.get("/getminormembers",auth.authentication,userController.getMinorMembersList);
+router.get("/getuserprofile",auth.authentication,userController.getProfile);
 router.post("/addminor",auth.authentication,userController.addMinor);
 router.put("/deleteuser",auth.authentication,userController.deleteUser);
 router.post("/addalerts",auth.authentication,reminderAlertsController.addReminderAlert);

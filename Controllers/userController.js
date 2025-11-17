@@ -133,3 +133,19 @@ module.exports.addMinor = async function (req, res) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
+
+module.exports.getProfile = async function (req, res) {
+    try {
+      
+        if (req.user.role !== 'primary') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        const user = await userModel.findOne({ _id: req.user._id.toString(),isDeleted:false });
+            // .select('_id userName relation'); 
+
+        return res.status(200).send({ status: true, message: "User is here", data: user })
+       } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+       }
+}
