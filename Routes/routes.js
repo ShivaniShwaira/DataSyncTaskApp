@@ -21,6 +21,7 @@ router.get("/getminormembers",auth.authentication,userController.getMinorMembers
 router.get("/getuserprofile",auth.authentication,userController.getProfile);
 router.post("/addminor",auth.authentication,userController.addMinor);
 router.put("/deleteuser",auth.authentication,userController.deleteUser);
+router.put("/logout",auth.authentication,userController.logout);
 router.post("/addalerts",auth.authentication,reminderAlertsController.addReminderAlert);
 router.put("/editalert",auth.authentication,reminderAlertsController.editAlert);
 router.get("/getalerts",auth.authentication,reminderAlertsController.getAlertList);

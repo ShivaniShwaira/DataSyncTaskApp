@@ -149,3 +149,13 @@ module.exports.getProfile = async function (req, res) {
         return res.status(500).send({ status: false, message: error.message })
        }
 }
+
+module.exports.logout = async function(req,res){
+    try{
+        let update = await userModel.findOneAndUpdate({ _id: req.user._id.toString(),isDeleted:false }, { token: null });
+        return res.status(200).send({ status: true, message: "User logged out", data: update })
+
+    }catch(error){
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
