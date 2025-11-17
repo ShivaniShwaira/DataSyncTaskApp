@@ -142,13 +142,14 @@ module.exports.getAlertList = async function (req, res) {
     try {
         let lastSync = req.query.lastSync;
         let deviceId = req.query.deviceId;
+
         let userId = req.user._id.toString();
         if (req.user.role !== 'primary') {
             return res.status(403).json({ message: 'Access denied' });
         }
         let alertList=[]
         
-    // Get user's device info
+    // Get user's device info //tempororily commented
     const user = await userModel.findOne({ _id: userId, "devices.deviceId": deviceId });
     if (!user) return res.status(404).json({ status: false, message: "User or device not found" });
    
@@ -163,6 +164,10 @@ module.exports.getAlertList = async function (req, res) {
                 { _id: userId, "devices.deviceId": deviceId },
                 { $set: { "devices.$.lastSync": new Date(), "devices.$.lastActive": new Date() } }
             );
+        }
+
+        if(req.query.alertId){
+          alertList= await reminderAlertsModel.findOne({_id:req.query.alertId,isDeleted:false})
         }
         return res.status(200).send({ status: true, message: "Alert List is here", data: alertList })
        } catch (error) {
