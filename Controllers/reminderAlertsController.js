@@ -184,3 +184,12 @@ module.exports.deleteAlert = async (req, res) => {
     res.status(500).json({ message: 'Error deleting alert', error });
   }
 };
+
+module.exports.getAlertDetails = async(req,res)=>{
+  try{
+    const doc = await reminderAlertsModel.findOne({_id:req.query.id.toString(),isDeleted:false});
+    return res.status(200).json({ status: true,message: 'Alert details are here', data: doc });
+  }catch(error){
+    res.status(500).json({ message: 'Error deleting alert', error });
+  }
+}
