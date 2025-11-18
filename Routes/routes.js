@@ -26,7 +26,6 @@ router.post("/addalerts",auth.authentication,reminderAlertsController.addReminde
 router.put("/editalert",auth.authentication,reminderAlertsController.editAlert);
 router.get("/getalerts",auth.authentication,reminderAlertsController.getAlertList);
 router.put("/deletealert",auth.authentication,reminderAlertsController.deleteAlert);
-router.get("/getalertsdetails",reminderAlertsController.getAlertDetails);
 router.get("/getalertbyid",auth.authentication,reminderAlertsController.getAlertDetails);
 router.get("/getreports",auth.authentication,reportController.getDocuments);
 router.put("/deletereport",auth.authentication,reportController.deleteDocument);

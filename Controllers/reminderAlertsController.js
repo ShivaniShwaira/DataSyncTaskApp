@@ -157,6 +157,9 @@ module.exports.getAlertList = async function (req, res) {
     // const lastSync = clientLastSync || device?.lastSync || new Date(0); // fallback to epoch if first sync
 
         if(!lastSync){
+           if(req.query.alertId){
+          alertList= await reminderAlertsModel.findOne({_id:req.query.alertId,isDeleted:false})
+        }
            alertList = await reminderAlertsModel.find({ createdBy: req.user._id.toString(),isDeleted:false});
         }else{
            alertList = await reminderAlertsModel.find({ createdBy: req.user._id.toString(),updatedAt: { $gt: lastSync },isDeleted:false});
@@ -166,9 +169,7 @@ module.exports.getAlertList = async function (req, res) {
             );
         }
 
-        if(req.query.alertId){
-          alertList= await reminderAlertsModel.findOne({_id:req.query.alertId,isDeleted:false})
-        }
+       
         return res.status(200).send({ status: true, message: "Alert List is here", data: alertList })
        } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
