@@ -16,7 +16,7 @@ module.exports.authentication = async (req, res, next) => {
     const token = authHeader.split(" ").pop();
 
     // Decoded token
-    const decoded = jwt.verify(token, "process.env.PRIVATE_KEY");
+    const decoded = jwt.verify(token, process.env.PRIVATE_KEY);
     const { UserId } = decoded;
 
     // Find user
