@@ -74,8 +74,11 @@ module.exports.getDocuments = async (req, res) => {
 module.exports.downloadDocument = async (req, res) => {
   try {
     
-
-    const uploadDir = path.join(__dirname, "../uploads");
+ const doc = await Document.findOne({_id:req.query.id.toString(),isDeleted:false});
+    if (!doc) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+    const uploadDir = path.join(__dirname, "../uploads",doc.fileName);
     const filePath = path.join(uploadDir, "sample3.pdf");
 
     if (!fs.existsSync(uploadDir)) {
@@ -84,11 +87,11 @@ module.exports.downloadDocument = async (req, res) => {
 
     fs.writeFileSync(filePath, "FAKE PDF CONTENT");
 
-    const doc = await Document.findOne({_id:req.query.id.toString(),isDeleted:false});
-    if (!doc) {
-      return res.status(404).json({ message: 'Document not found' });
-    }
-     if(req.query.download==true){
+   const shouldDownload =
+      req.query.download === "true" ||
+      req.query.download === true ||
+      req.query.download === "1";
+     if(shouldDownload){
     return res.download(path.resolve(doc.filePath));
      }else{
           return res.status(200).json({ status: true,message: 'Report details are here', data: doc });
