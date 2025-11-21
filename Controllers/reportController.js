@@ -77,8 +77,11 @@ module.exports.downloadDocument = async (req, res) => {
     if (!doc) {
       return res.status(404).json({ message: 'Document not found' });
     }
-
+     if(req.query.download){
     return res.download(path.resolve(doc.filePath));
+     }else{
+          return res.status(200).json({ status: true,message: 'Report details are here', data: doc });
+     }
   } catch (error) {
     res.status(500).json({ message:error.message, error });
   }
