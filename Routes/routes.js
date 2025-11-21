@@ -6,6 +6,7 @@ const multer = require('multer');
 // const path = require('path');
 const reportController = require('../Controllers/reportController');
 const auth = require('../Middleware/auth')
+const path = require("path");
 
 const uploadPath = path.join(__dirname, "../uploads");
 
