@@ -6,8 +6,16 @@ const multer = require('multer');
 // const path = require('path');
 const reportController = require('../Controllers/reportController');
 const auth = require('../Middleware/auth')
+
+const uploadPath = path.join(__dirname, "../uploads");
+
+// Create uploads folder if missing
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+  console.log("Uploads folder created at runtime");
+}
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
+  destination: (req, file, cb) => cb(null, uploadPath),
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
   },
