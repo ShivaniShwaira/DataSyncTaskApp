@@ -42,7 +42,7 @@ router.put("/deletereport",auth.authentication,reportController.deleteDocument);
 router.post("/uploadreport",auth.authentication,upload.single('file'),reportController.uploadDocument);
 router.get("/downloadreport",auth.authentication,reportController.downloadDocument);
 router.put("/editreport",auth.authentication,upload.single('file'),reportController.editDocument);
-router.put("/gettreportbyid",auth.authentication,reportController.getDocumentById);
+router.put("/getreportbyid",auth.authentication,reportController.getDocumentById);
 // Routes
 // router.post('/upload', upload.single('file'), reportController.uploadDocument);
 // router.get('/', reportController.getDocuments);
