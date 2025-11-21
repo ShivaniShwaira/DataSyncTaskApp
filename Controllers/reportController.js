@@ -73,6 +73,17 @@ module.exports.getDocuments = async (req, res) => {
 
 module.exports.downloadDocument = async (req, res) => {
   try {
+    
+
+    const uploadDir = path.join(__dirname, "../uploads");
+    const filePath = path.join(uploadDir, "sample3.pdf");
+
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    fs.writeFileSync(filePath, "FAKE PDF CONTENT");
+
     const doc = await Document.findOne({_id:req.query.id.toString(),isDeleted:false});
     if (!doc) {
       return res.status(404).json({ message: 'Document not found' });
