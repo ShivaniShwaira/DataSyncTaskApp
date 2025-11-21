@@ -71,36 +71,72 @@ module.exports.getDocuments = async (req, res) => {
 };
 
 
+// module.exports.downloadDocument = async (req, res) => {
+//   try {
+    
+//  const doc = await Document.findOne({_id:req.query.id.toString(),isDeleted:false});
+//     if (!doc) {
+//       return res.status(404).json({ message: 'Document not found' });
+//     }
+//     const uploadDir = path.join(__dirname, "../uploads",doc.fileName);
+//     const filePath = path.join(uploadDir, "sample3.pdf");
+
+//     if (!fs.existsSync(uploadDir)) {
+//         fs.mkdirSync(uploadDir, { recursive: true });
+//     }
+
+//     fs.writeFileSync(filePath, "FAKE PDF CONTENT");
+
+//    const shouldDownload =
+//       req.query.download === "true" ||
+//       req.query.download === true ||
+//       req.query.download === "1";
+//      if(shouldDownload){
+//     return res.download(path.resolve(doc.filePath));
+//      }else{
+//           return res.status(200).json({ status: true,message: 'Report details are here', data: doc });
+//      }
+//   } catch (error) {
+//     res.status(500).json({ message:error.message, error });
+//   }
+// };
+
 module.exports.downloadDocument = async (req, res) => {
   try {
-    
- const doc = await Document.findOne({_id:req.query.id.toString(),isDeleted:false});
+    const doc = await Document.findOne({
+      _id: req.query.id?.toString(),
+      isDeleted: false,
+    });
+
     if (!doc) {
-      return res.status(404).json({ message: 'Document not found' });
-    }
-    const uploadDir = path.join(__dirname, "../uploads",doc.fileName);
-    const filePath = path.join(uploadDir, "sample3.pdf");
-
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
+      return res.status(404).json({ message: "Document not found" });
     }
 
-    fs.writeFileSync(filePath, "FAKE PDF CONTENT");
+    const absolutePath = path.resolve(doc.filePath);
 
-   const shouldDownload =
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({ message: "File not found on server" });
+    }
+
+    const shouldDownload =
       req.query.download === "true" ||
       req.query.download === true ||
       req.query.download === "1";
-     if(shouldDownload){
-    return res.download(path.resolve(doc.filePath));
-     }else{
-          return res.status(200).json({ status: true,message: 'Report details are here', data: doc });
-     }
+
+    if (shouldDownload) {
+      return res.download(absolutePath, doc.fileName);
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Report details are here",
+      data: doc,
+    });
   } catch (error) {
-    res.status(500).json({ message:error.message, error });
+    console.log(error);
+    res.status(500).json({ message: error.message });
   }
 };
-
 
 module.exports.deleteDocument = async (req, res) => {
   try {
