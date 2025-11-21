@@ -217,7 +217,7 @@ if (server) {
              const res =await request(app)
             .get('/downloadreport')
             .set('Authorization',`Bearer ${token}`)
-            .query({ id: addRes.body.data._id.toString()});
+            .query({ id: addRes.body.data._id.toString(),download:true});
 
             expect(res.headers["content-type"]).toBe("application/pdf");
             expect(res.headers["content-disposition"]).toContain("attachment");
