@@ -12,10 +12,12 @@ module.exports.uploadDocument = async (req, res) => {
     if(reportNameExist!=null){
         return res.status(400).send({ status: false, message: "Entered Report Name is already exist" });
     }
+        const finalPath = path.join("uploads", req.file.filename);
+
     const newDoc = await Document.create({
       name:req.body.name,
       fileName: req.file.originalname,
-      filePath: req.file.path,
+      filePath: finalPath,             //req.file.path,
       fileType: req.file.mimetype,
       size: req.file.size,
       uploadedBy: req.user._id.toString(), // normally from auth token
